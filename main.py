@@ -5,6 +5,5 @@ def main():
     
     save_video(video_frames, 'output_videos/output_video.avi')
     
-    #test
 if __name__ == "__main__":
     main()
