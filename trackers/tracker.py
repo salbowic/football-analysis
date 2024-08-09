@@ -161,27 +161,37 @@ class Tracker:
         return frame
     
     
-    def draw_team_ball_control(self, frame, frame_num, team_ball_control):
+    def draw_team_ball_possesion(self, frame, frame_num, team_ball_possesion, team_colors):
         # Draw a semi-transparent rectangle
         overlay = frame.copy()
-        cv2.rectangle(overlay,(1350, 850), (1900, 970), (255, 255, 255), cv2.FILLED)
+        cv2.rectangle(overlay,(1200, 65), (1800, 145), (0, 0, 0), cv2.FILLED)
         alpha = 0.4
         cv2.addWeighted(overlay, alpha, frame, 1 - alpha, 0, frame)
         
         # Get the number of time each team had ball control
-        team_ball_control_till_frame = team_ball_control[:frame_num+1]
-        team_1_num_frames = team_ball_control_till_frame[team_ball_control_till_frame==1].shape[0]
-        team_2_num_frames = team_ball_control_till_frame[team_ball_control_till_frame==2].shape[0]
+        team_ball_posession_till_frame = team_ball_possesion[:frame_num+1]
+        team_1_num_frames = team_ball_posession_till_frame[team_ball_posession_till_frame==1].shape[0]
+        team_2_num_frames = team_ball_posession_till_frame[team_ball_posession_till_frame==2].shape[0]
         team_1 = team_1_num_frames/(team_1_num_frames+team_2_num_frames)
         team_2 = team_2_num_frames/(team_1_num_frames+team_2_num_frames)
         
-        cv2.putText(frame, f"Team 1 Ball Control: {team_1*100:.2f}%", (1400, 900), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3)
-        cv2.putText(frame, f"Team 2 Ball Control: {team_2*100:.2f}%", (1400, 950), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 3)
+        # Set positions
+        team_1_text_pos = (1350, 95)
+        team_2_text_pos = (1350, 140)
+        square_size = 30
+
+        # Draw colored squares for each team
+        cv2.rectangle(frame, (1300, 70), (1300 + square_size, 70 + square_size), team_colors[1], cv2.FILLED)
+        cv2.rectangle(frame, (1300, 115), (1300 + square_size, 115 + square_size), team_colors[2], cv2.FILLED)
+        
+        # Draw text for ball control
+        cv2.putText(frame, f"Team 1 Ball Possesion: {team_1 * 100:.2f}%", team_1_text_pos, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
+        cv2.putText(frame, f"Team 2 Ball Possesion: {team_2 * 100:.2f}%", team_2_text_pos, cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
         
         return frame
     
     
-    def draw_annotations(self, video_frames, tracks, team_ball_control):
+    def draw_annotations(self, video_frames, tracks, team_ball_control, team_colors):
         output_video_frames = []
         for frame_num, frame in enumerate(video_frames):
             frame = frame.copy()
@@ -207,7 +217,7 @@ class Tracker:
                 frame = self.draw_triangle(frame, ball["bbox"],(0,255,0))
             
             # Draw team ball control
-            frame = self.draw_team_ball_control(frame, frame_num, team_ball_control)
+            frame = self.draw_team_ball_possesion(frame, frame_num, team_ball_control, team_colors)
             
             output_video_frames.append(frame)
             
