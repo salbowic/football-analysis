@@ -1,4 +1,5 @@
 from player_ball_assigner import PlayerBallAssigner
+import numpy as np
 
 def assign_ball_acquisition(tracks, video_frames, team_assigner):
     player_assigner = PlayerBallAssigner()
@@ -13,5 +14,6 @@ def assign_ball_acquisition(tracks, video_frames, team_assigner):
             team_ball_control.append(tracks['players'][frame_num][assigned_player]['team'])
         else:
             team_ball_control.append(team_ball_control[-1])
+    team_ball_control = np.array(team_ball_control)
     
     return team_ball_control
